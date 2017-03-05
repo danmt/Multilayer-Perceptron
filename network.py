@@ -1,52 +1,115 @@
 import numpy as np
 from layer import Layer
+from scipy.special import expit
+
+def sigmoid_prime(x):
+    return expit(x)*(1.0-expit(x))
+
+def get_synapses(rows,cols,bias):
+	bias_vector = np.ones(rows)
+	synapses_matrix = np.random.normal(0,0.1,(rows,cols))
+	return np.insert(synapses_matrix,0,1 * bias,axis=1)
 
 class Network:
 	def __init__(self,dimensions,bias):
 		self.numOfLayers = len(dimensions)
 		self.layers = []
 		self.input_size = dimensions[0]
+		self.output_size = dimensions[-1]
 
 		for (i,value) in enumerate(dimensions):
-			if i + 1 < len(dimensions):
-				nextSize = dimensions[i + 1]
-			else:
-				nextSize = 0
-
-			layer = Layer(i + 1,value,bias,nextSize)
+			layer = Layer(i + 1,value,bias)
 			self.layers.append(layer)
 
-	def train(self,dataset):
+			if i != 0:
+				synapses = get_synapses(dimensions[i],dimensions[i-1],bias)
+				self.layers[i].set_synapses(synapses)
+
+	def train(self,epochs,dataset,learning_rate):
 		X = dataset[:,:self.input_size]
 		Y = dataset[:,self.input_size:]
-		last_layer = self.layers[-1]
+		err = 0
+		err_acc = 0
 
-		for (i,xi) in enumerate(X):
-			self.feed_forward(xi)
-			error = 0
+		for epoch in xrange(1,epochs+1):
+			for (i,xi) in enumerate(X):
+				self.feed_forward(xi)
+				err = self.backward_pass(Y[i],learning_rate)
+				err_acc = err_acc + err
 
-			for (j,neuron) in enumerate(last_layer.neurons):
-				error = error + 0.5 * (Y[j] - neuron.value)**2
-
-			print(error)
+			if (epoch % 1000 == 0):
+				print('\nEpoch #' + str(epoch))
+				print('err = '),
+				print(err)
+				print('avg err = '),
+				print(err_acc/epoch)
 
 
 	def feed_forward(self,input_vector):
-		W = self.layers[0].get_weights()
-		self.layers[0].set_values(input_vector);
-		input_vector = np.insert(input_vector,0,1)
+		input_vector = np.insert(input_vector,0,1)		
+		self.layers[0].set_values(input_vector)
 
 		for i in xrange(1,self.numOfLayers):
-			W = self.layers[i - 1].get_weights()
-			x = self.layers[i - 1].get_values()
+			W = self.layers[i].in_synapses
+		 	x = self.layers[i - 1].get_values()
 
 			for (j,neuron) in enumerate(self.layers[i].neurons):
-				vj = np.dot(W.T[j],x)
+				vj = np.dot(W[j],x)
 				neuron.adjust_value(vj)
+
+	def backward_pass(self,Y,learning_rate):
+		layers = self.layers
+		
+		for (n,layer) in enumerate(layers[::-1]):
+			if n + 1 == len(self.layers):
+				continue
+
+			w = layer.in_synapses
+
+			for (i,neuron) in enumerate(layer.neurons):
+				if n == 0: #CASO CAPA SALIDA
+					error_out = Y[i] - neuron.value
+				else: #CASO CAPAS OCULTA
+					out_layer = self.layers[layer.num]
+					y = out_layer.get_gradients_as_array()
+					weights = out_layer.get_weights(neuron.num)
+					error_out = np.dot(weights,y)
+
+				delta = sigmoid_prime(neuron.value)
+				local_gradient = error_out * delta
+				neuron.set_gradient(local_gradient)
+
+				#Actualizo el sesgo
+				w[i][0] = w[i][0] - (learning_rate * local_gradient)
+
+				for (j,neur) in enumerate(layers[layer.num - 2].neurons):
+					w[i][j] = w[i][j] + (learning_rate * neur.value * local_gradient)
+
+		output = self.layers[self.numOfLayers - 1].get_neurons_as_array()				
+		error = Y - output
+		return 0.5*np.sum((error)**2)
+
+	def predict(self,x,y):
+		x = np.insert(x,0,1)		
+		self.layers[0].set_values(x)
+
+		for i in xrange(1,self.numOfLayers):
+			W = self.layers[i].in_synapses
+		 	x = self.layers[i - 1].get_values()
+
+			for (j,neuron) in enumerate(self.layers[i].neurons):
+				vj = np.dot(W[j],x)
+				neuron.adjust_value(expit(vj))
+
+		output = self.layers[self.numOfLayers - 1].get_neurons_as_array()				
+		error = output - y
+		return 0.5*np.sum((error)**2)
 
 	def print_network(self):
 		print('\n\nNetwork:\n')
 
 		for (i,layer) in enumerate(self.layers):
 			layer.print_layer()
+			if hasattr(layer,'in_synapses'):
+				print(layer.in_synapses)
 			
