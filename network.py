@@ -31,13 +31,13 @@ class Network:
 		err = 0
 		err_acc = 0
 
-		for epoch in xrange(1,epochs+1):
+		for epoch in range(1,epochs+1):
 			for (i,xi) in enumerate(X):
 				self.feed_forward(xi)
 				err = self.backward_pass(Y[i],learning_rate)
 				err_acc = err_acc + err
 
-			if (epoch % 1000 == 0):
+			if (epoch % 1 == 0):
 				print('\nEpoch #' + str(epoch))
 				print('err = '),
 				print(err)
@@ -49,9 +49,9 @@ class Network:
 		input_vector = np.insert(input_vector,0,1)		
 		self.layers[0].set_values(input_vector)
 
-		for i in xrange(1,self.numOfLayers):
+		for i in range(1,self.numOfLayers):
 			W = self.layers[i].in_synapses
-		 	x = self.layers[i - 1].get_values()
+			x = self.layers[i - 1].get_values()
 
 			for (j,neuron) in enumerate(self.layers[i].neurons):
 				vj = np.dot(W[j],x)
@@ -93,9 +93,9 @@ class Network:
 		x = np.insert(x,0,1)		
 		self.layers[0].set_values(x)
 
-		for i in xrange(1,self.numOfLayers):
+		for i in range(1,self.numOfLayers):
 			W = self.layers[i].in_synapses
-		 	x = self.layers[i - 1].get_values()
+			x = self.layers[i - 1].get_values()
 
 			for (j,neuron) in enumerate(self.layers[i].neurons):
 				vj = np.dot(W[j],x)

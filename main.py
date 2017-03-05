@@ -1,11 +1,10 @@
 # coding=utf-8
-from network import Network
-from layer import Layer
+from ejercicio2 import *
 import numpy as np
 
 def main():
 
-	"""opcion = ""
+	opcion = ""
 	opcion2 = ""
 	print('Redes Neuronales: Clasificación de Patrones.\n\n')
 	print('El primer conjunto de datos (1) corresponde a la clasificación\n')
@@ -16,7 +15,7 @@ def main():
 		print('Seleccione el conjuto de datos de su preferencia:\n')
 		opcion = input('')
 		if opcion == "1":
-			#ejercicio_1()
+			ejercicio2()
 		elif opcion == "2":
 			while opcion2 == "":
 				print('\n')
@@ -26,6 +25,7 @@ def main():
 				opcion2 = input('')
 				if opcion2 == "1" or opcion2 == "2":
 					#ejercicio_2(opcion2)
+					print("")
 				else:
 					print('Debe introducir \'1\' o \'1\' \n')
 					opcion2 = ""
@@ -43,7 +43,7 @@ def main():
 	#print(error)
 	net.train(10000,train_set,0.05)
 	error = net.predict(test_x,test_y)
-	#net.print_network()
+	#net.print_network()"""
 
 
 if __name__ == "__main__":

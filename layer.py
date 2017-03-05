@@ -9,7 +9,7 @@ class Layer:
 		self.bias = bias
 		self.synapses = []
 
-		for i in xrange(0,size):
+		for i in range(0,size):
 			self.neurons.append(Neuron(i + 1,bias))
 
 	def get_values(self):
@@ -39,7 +39,7 @@ class Layer:
 	def get_weights(self,num):
 		new_weigths = []
 
-		for x in xrange(0,len(self.in_synapses)):
+		for x in range(0,len(self.in_synapses)):
 			new_weigths.append(self.in_synapses[x][num])
 
 		return np.array(new_weigths)
