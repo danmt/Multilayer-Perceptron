@@ -41,7 +41,7 @@ def main():
 	test_y = np.array([[0]])
 	
 	#print(error)
-	net.train(10000,train_set,0.01)
+	net.train(10000,train_set,0.05)
 	error = net.predict(test_x,test_y)
 	#net.print_network()
 

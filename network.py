@@ -55,7 +55,7 @@ class Network:
 
 			for (j,neuron) in enumerate(self.layers[i].neurons):
 				vj = np.dot(W[j],x)
-				neuron.adjust_value(vj)
+				neuron.adjust_value(expit(vj))
 
 	def backward_pass(self,Y,learning_rate):
 		layers = self.layers
