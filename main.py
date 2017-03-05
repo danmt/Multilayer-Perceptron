@@ -5,7 +5,7 @@ import numpy as np
 
 def main():
 
-	opcion = ""
+	"""opcion = ""
 	opcion2 = ""
 	print('Redes Neuronales: Clasificación de Patrones.\n\n')
 	print('El primer conjunto de datos (1) corresponde a la clasificación\n')
@@ -32,15 +32,18 @@ def main():
 		else:
 			print('\nDebe introducir \'1\' o \'2\' \n')
 			opcion = ""
+"""
 
-
-	net = Network([2,3,1],0.25)
-	dataset = np.array([[1,2,0],[0.4,0.7,0],[0.7,0.8,1],[0.4,0.1,1]])
-	datas= np.matrix(np.loadtxt('nombre.txt'), dtype=np.float128)
-
-	net.print_network()
-	net.train(dataset)
-	net.print_network()
+	net = Network([2,4,1],0.1)
+	train_set = np.array([[0,0,0],[0,1,1],[1,0,1],[1,1,1]])
+	
+	test_x = np.array([[1,0]])
+	test_y = np.array([[0]])
+	
+	#print(error)
+	net.train(10000,train_set,0.01)
+	error = net.predict(test_x,test_y)
+	#net.print_network()
 
 
 if __name__ == "__main__":
