@@ -28,21 +28,28 @@ class Network:
 	def train(self,epochs,dataset,learning_rate):
 		X = dataset[:,:self.input_size]
 		Y = dataset[:,self.input_size:]
-		err = 0
 		err_acc = 0
 
 		for epoch in xrange(1,epochs+1):
+			errors = []
+
 			for (i,xi) in enumerate(X):
 				self.feed_forward(xi)
 				err = self.backward_pass(Y[i],learning_rate)
-				err_acc = err_acc + err
+				errors.append(err)
+
+			errors = np.array(errors)
+			errorN = 0.5*np.sum(errors**2) #Error cuadratico medio iteracion n
+			err_acc = err_acc + errorN
 
 			if (epoch % 1000 == 0):
 				print('\nEpoch #' + str(epoch))
-				print('err = '),
-				print(err)
 				print('avg err = '),
-				print(err_acc/epoch)
+				print(errorN)
+
+
+		err_acc = err_acc / epochs
+		print(err_acc)
 
 
 	def feed_forward(self,input_vector):
@@ -89,7 +96,7 @@ class Network:
 		error = Y - output
 		return 0.5*np.sum((error)**2)
 
-	def predict(self,x,y):
+	def predict(self,x):
 		x = np.insert(x,0,1)		
 		self.layers[0].set_values(x)
 
@@ -101,9 +108,8 @@ class Network:
 				vj = np.dot(W[j],x)
 				neuron.adjust_value(expit(vj))
 
-		output = self.layers[self.numOfLayers - 1].get_neurons_as_array()				
-		error = output - y
-		return 0.5*np.sum((error)**2)
+		output = self.layers[self.numOfLayers - 1].get_neurons_as_array()
+		return expit(np.sum(output))
 
 	def print_network(self):
 		print('\n\nNetwork:\n')
