@@ -37,12 +37,24 @@ def main():
 	net = Network([2,4,1],0.1)
 	train_set = np.array([[0,0,0],[0,1,1],[1,0,1],[1,1,1]])
 	
-	test_x = np.array([[1,0]])
+	test_x = np.array([[0,0]])
 	test_y = np.array([[0]])
 	
+	net.print_network()
 	#print(error)
 	net.train(10000,train_set,0.05)
 	error = net.predict(test_x,test_y)
+	#net.print_network()
+
+	output = net.predict(test_x)
+
+	print("\nOutput:\n")
+	print("desired="),
+	print(test_y)
+	print("output="),
+	print(output)
+
+	net.print_network()
 	#net.print_network()"""
 
 
