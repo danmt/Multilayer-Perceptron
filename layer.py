@@ -7,7 +7,7 @@ class Layer:
 		self.num = num
 		self.size = size
 		self.bias = bias
-		self.synapses = []
+		self.in_synapses = []
 
 		for i in range(0,size):
 			self.neurons.append(Neuron(i + 1,bias))
