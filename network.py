@@ -6,7 +6,6 @@ def sigmoid_prime(x):
     return expit(x)*(1.0-expit(x))
 
 def get_synapses(rows,cols,bias):
-	#bias_vector = np.ones(rows)
 	synapses_matrix = np.random.normal(0,0.1,(rows,cols))
 	synapses_matrix = synapses_matrix.T
 	synapses_matrix = np.insert(synapses_matrix,0,1 * bias,axis=1)
@@ -51,13 +50,10 @@ class Network:
 
 
 		err_acc = err_acc / epochs
-		#print(err_acc)
 
 
 	def feed_forward(self,input_vector):
 		self.layers[0].set_values(input_vector)
-
-		#print('\nFeed forward')
 
 		for i in xrange(1,self.numOfLayers):
 			W = self.layers[i].in_synapses
@@ -65,21 +61,12 @@ class Network:
 
 		 	value = np.dot(W,x.T)
 
-		 	# print('W='),
-		 	# print(W)
-		 	# print('x='),
-		 	# print(x)
-		 	# print('value='),
-		 	# print(value)
-
 			for (j,neuron) in enumerate(self.layers[i].neurons):
 				neuron.adjust_value(expit(value[j]))
 
 	def backward_pass(self,Y,learning_rate):
 		layers = self.layers
 
-		#print('\nBack pass')
-		
 		for (n,layer) in enumerate(layers[::-1]):
 			if n + 1 == len(self.layers):
 				continue
@@ -88,59 +75,21 @@ class Network:
 				past_w = w
 				past_layer = self.layers[layer.num]
 
-
 			w = layer.in_synapses
 
-			# print('w='),
-			# print(w)
-
-			# print('Y='),
-			# print(Y)
-
 			for (i,neuron) in enumerate(layer.neurons):
-				# print('Iteracion #' + str(i))
-				# print('neuron='),
-				# print(neuron.value)
 				if n == 0: #CASO CAPA SALIDA
 					error_out = Y[i] - neuron.value
 				else: #CASO CAPAS OCULTA
 					err_array = []
-					#print('LA PRUEBA\n\n\n\n')
 					for (j,neur) in enumerate(past_layer.neurons):
-						# print(neur.num)
-						# print(neur.gradient)
-						# print(past_w[j])
-						# print('i='),
-						# print(i)
-						# print(past_w[j][i + 1])
-						#print(w[j][i+1])
 						err_array.append(neur.gradient * past_w[j][i + 1])
 
 					error_out = np.sum(err_array)
-					#past_w[i+1]		
-
-					#out_layer = self.layers[layer.num]
-					#y = out_layer.get_gradients_as_array()
-					#weights = out_layer.get_weights(neuron.num)
-					#error_out = np.dot(weights,y)
-
-				
-				# print('error_out='),
-				# print(error_out)
-
 
 				delta = sigmoid_prime(neuron.value)
 				local_gradient = error_out * delta
 				neuron.set_gradient(local_gradient)
-
-				# print('delta='),
-				# print(delta)
-
-				# print('local_gradient='),
-				# print(local_gradient)
-
-				#Actualizo el sesgo
-				#w[i][0] = w[i][0] - (learning_rate * local_gradient)
 
 				for (j,neur) in enumerate(layers[layer.num - 2].neurons):
 					if (j == 0):
@@ -152,7 +101,7 @@ class Network:
 		error = Y - output
 		return 0.5*np.sum((error)**2)
 
-	def predict(self,x):
+	def predict(self,x,y):
 		self.layers[0].set_values(x)
 
 		for i in xrange(1,self.numOfLayers):
@@ -165,7 +114,12 @@ class Network:
 				neuron.adjust_value(expit(value[j]))
 
 		output = self.layers[self.numOfLayers - 1].get_neurons_as_array()
-		return output
+		output = np.sum(output-y)
+
+		if output <= 0:
+			return 1
+		else:
+			return 0
 
 	def print_network(self):
 		print('\n\nNetwork:\n')
