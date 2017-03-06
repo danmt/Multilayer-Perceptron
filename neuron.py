@@ -15,4 +15,5 @@ class Neuron:
 
 	def print_neuron(self):
 		print('Neuron ' + str(self.num)),
-		print(' value = ' + str(self.value))
+		print(' value = ' + str(self.value)),
+		print(' gradient = ' + str(self.gradient))
